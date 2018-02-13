@@ -17,6 +17,20 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('NEW USER CONNECTED');
 
+    // Csak a csatlakozott usernek küldi
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome',
+        createdAt: new Date().getTime()
+    });
+
+    // A csatlakozott useren kivül mindenkinek elküldi
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'new user joined',
+        createdAt: new Date().getTime()
+    });
+
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
         // IO.emit mindenkinek elküldi az üzenetet
@@ -25,6 +39,13 @@ io.on('connection', (socket) => {
             text: message.text,
             createdAt: new Date().getTime()
         });
+
+        // Broadcast mindenkinek elküldi kivéve aki küldte
+        //socket.broadcast.emit('createMessage', {
+        //        from: message.from,
+        //        text: message.text,
+        //        createdAt: new Date().getTime()
+        //});
     });
 
     socket.on('disconnect', () => {
