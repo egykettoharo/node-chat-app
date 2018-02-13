@@ -15,17 +15,45 @@ socket.on('newMessage', function(message) {
     $('#messages').append(li);
 });
 
-(function($) {
-    console.log( "ready!" );
+socket.on('newLocationMessage', function(message) {
+    console.log('New message', message);
+    var li = $('<li></li>');
+    li.html('<a target="_blank" href="' + message.url + '">Location</a>');
+    $('#messages').append(li);
+});
 
+(function($) {
     $('#message-form').on('submit', function(e) {
          e.preventDefault();
 
+        var input = $(this).find('input[name="message"]');
+
         socket.emit('createMessage', {
             from: 'User',
-            text: $(this).find('input[name="message"]').val()
+            text: input.val()
         }, function() {
+            input.val('');
+        });
+    });
 
+    var locationButton = $('#send-location');
+
+    locationButton.on('click', function() {
+        if(!navigator.geolocation) {
+            return alert('Geolocation not supperted by your browser.');
+        }
+
+        locationButton.attr('disabled', 'disabled').text('Sending location...');
+
+        navigator.geolocation.getCurrentPosition(function(position) {
+            locationButton.removeAttr('disabled').text('Send location'); 
+            socket.emit('createLocationMessage', {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            });
+        }, function() {
+            locationButton.removeAttr('disabled').text('Send location');
+            alert('Unable to fetch your location');
         });
     });
 })(jQuery);
