@@ -19,11 +19,12 @@ io.on('connection', (socket) => {
 
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
-    });
-
-    socket.emit('newMessage', {
-        from: 'jani@example.com',
-        text: 'Hey. Whatsup'
+        // IO.emit mindenkinek elküldi az üzenetet
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        });
     });
 
     socket.on('disconnect', () => {
