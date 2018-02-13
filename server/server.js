@@ -3,7 +3,7 @@ const http      = require('http');
 const express   = require('express');
 const socketIO  = require('socket.io');
 
-const {generateMessage} = require('./utils/message.js');
+const {generateMessage} = require('./Utils/message.js');
 const publicPath    = path.join(__dirname, '../public');
 const port          = process.env.PORT || 3000;
 
